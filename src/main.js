@@ -1,5 +1,4 @@
-#!/usr/bin/node --harmony
-/* eslint-disable node/shebang */
+#!/usr/bin/env node
 const commander = require('commander');
 const shell = require('shelljs');
 const chalk = require('chalk');
