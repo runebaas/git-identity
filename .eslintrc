@@ -1,0 +1,8 @@
+{
+  "extends": "cimpress-atsquad",
+  "rules": {
+    "max-len": ["error", { "code": 200, "tabWidth": 2, "ignoreStrings": true, "ignoreUrls": true }],
+    "quotes": ["error", "single", { "avoidEscape": true }],
+    "no-sync": ["off"]
+  }
+}
