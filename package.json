@@ -1,14 +1,12 @@
 {
   "name": "git-identity",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Git Identity Manager",
   "main": "src/main.js",
   "repository": "https://github.com/runebaas/git-identity",
   "author": "runebaas <runebaas@gmail.com>",
   "license": "MIT",
-  "scripts": {
-    
-  },
+  "scripts": {},
   "dependencies": {
     "chalk": "^2.4.1",
     "commander": "^2.16.0",
