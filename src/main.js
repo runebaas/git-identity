@@ -5,6 +5,7 @@ const chalk = require('chalk');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const package = require('../package');
 
 if (!shell.which('git')) {
   console.warn('This script requires git');
@@ -45,14 +46,14 @@ function setCurrentIdentity(identity, global = false) {
 }
 
 function printIdentity(identity) {
-  console.info(chalk.green('Name: ') + identity.name);
+  console.info(chalk.green('Name:  ') + identity.name);
   console.info(chalk.green('Email: ') + identity.email);
   if (identity.signingKey) {
-    console.info(chalk.green('key: ') + identity.signingKey);
+    console.info(chalk.green('key:   ') + identity.signingKey);
   }
 }
 
-commander.version('1.0.0');
+commander.version(package.version);
 
 commander
   .command('use [identity]')
@@ -98,7 +99,6 @@ commander
     console.info(`Successfully removed ${identity}`);
   });
 
-// DONE
 commander
   .command('show [identity]')
   .description('show info about an identity')
@@ -112,7 +112,6 @@ commander
     printIdentity(p);
   });
 
-// DONE
 commander
   .command('ls')
   .description('list all identities')
@@ -121,7 +120,6 @@ commander
     Object.keys(identities).forEach(key => console.log(key));
   });
 
-// DONE
 commander
   .command('reset')
   .description('reset identity for this project ot the global git identity')
@@ -130,7 +128,6 @@ commander
     console.info('Identity has been reset to global identity');
   });
 
-// DONE
 commander
   .command('current')
   .description('show current identity')
