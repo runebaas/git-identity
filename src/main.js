@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const commander = require('commander');
+const program = require('caporal');
 const shell = require('shelljs');
 const chalk = require('chalk');
 const fs = require('fs');
@@ -53,11 +53,11 @@ function printIdentity(identity) {
   }
 }
 
-commander.version(package.version);
+program.version(package.version);
 
-commander
-  .command('use [identity]')
-  .description('use an identity')
+program
+  .command('use', 'use an identity')
+  .argument('<identity>', 'identity name', Object.keys(getIdentities()))
   .option('-g, --global')
   .action((identity, options) => {
     const identities = getIdentities();
@@ -70,9 +70,9 @@ commander
     console.info(`Identity set to ${identity}`);
   });
 
-commander
-  .command('add [name]')
-  .description('add the current identity to .gitidentities')
+program
+  .command('add', 'add the current identity to .gitidentities')
+  .argument('<identity>', 'identity name', Object.keys(getIdentities()))
   .action(name => {
     const identity = getCurrentIdentity();
     let identities = getIdentities();
@@ -85,9 +85,9 @@ commander
     console.info(`Successfully added ${name}`);
   });
 
-commander
-  .command('remove [identity]')
-  .description('remove an identity from .gitidentities')
+program
+  .command('remove', 'remove an identity from .gitidentities')
+  .argument('<identity>', 'identity name', Object.keys(getIdentities()))
   .action(identity => {
     let identities = getIdentities();
     if (!identities[identity]) {
@@ -99,9 +99,9 @@ commander
     console.info(`Successfully removed ${identity}`);
   });
 
-commander
-  .command('show [identity]')
-  .description('show info about an identity')
+program
+  .command('show', 'show info about an identity')
+  .argument('<identity>', 'identity name', Object.keys(getIdentities()))
   .action(identity => {
     const identities = getIdentities();
     const p = identities[identity];
@@ -112,32 +112,29 @@ commander
     printIdentity(p);
   });
 
-commander
-  .command('ls')
-  .description('list all identities')
+program
+  .command('ls', 'list all identities')
   .action(() => {
     const identities = getIdentities();
     Object.keys(identities).forEach(key => console.log(key));
   });
 
-commander
-  .command('reset')
-  .description('reset identity for this project ot the global git identity')
+program
+  .command('reset', 'reset identity for this project ot the global git identity')
   .action(() => {
     setCurrentIdentity(getCurrentIdentity(true));
     console.info('Identity has been reset to global identity');
   });
 
-commander
-  .command('current')
-  .description('show current identity')
+program
+  .command('current', 'show current identity')
   .option('-g, --global')
   .action(options => {
     printIdentity(getCurrentIdentity(options.global));
   });
 
-commander
-  .command('*')
-  .action(() => console.log('could not find command, use "git-identity -h" for a list of all commands'));
+// program
+//   .command('*')
+//   .action(() => console.log('could not find command, use "git-identity -h" for a list of all commands'));
 
-commander.parse(process.argv);
+program.parse(process.argv);
