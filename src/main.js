@@ -45,11 +45,11 @@ function setCurrentIdentity(identity, global = false) {
   }
 }
 
-function printIdentity(identity) {
-  console.info(chalk.green('Name:  ') + identity.name);
-  console.info(chalk.green('Email: ') + identity.email);
+function printIdentity(logger, identity) {
+  logger.info(chalk.green('Name:  ') + identity.name);
+  logger.info(chalk.green('Email: ') + identity.email);
   if (identity.signingKey) {
-    console.info(chalk.green('key:   ') + identity.signingKey);
+    logger.info(chalk.green('key:   ') + identity.signingKey);
   }
 }
 
@@ -59,78 +59,80 @@ program
   .command('use', 'use an identity')
   .argument('<identity>', 'identity name', Object.keys(getIdentities()))
   .option('-g, --global', 'global git config')
-  .action((args, options) => {
+  .action((args, options, logger) => {
     const identities = getIdentities();
     const i = identities[args.identity];
     if (!i) {
-      console.log('identity not found');
+      logger.warn('identity not found');
       process.exit(1);
     }
     setCurrentIdentity(i, options.global);
-    console.info(`Identity set to ${args.identity}`);
+    logger.info(`Identity set to ${args.identity}`);
   });
 
 program
   .command('add', 'add the current identity to .gitidentities')
   .argument('<name>', 'name for the identity')
-  .action(args => {
+  .action((args, options, logger) => {
     const identity = getCurrentIdentity();
     let identities = getIdentities();
     if (identities[args.name]) {
-      console.warn('that identity already exists');
+      logger.warn('that identity already exists');
       process.exit(1);
     }
     identities[args.name] = identity;
     saveIdentities(identities);
-    console.info(`Successfully added ${args.name}`);
+    logger.info(`Successfully added ${args.name}`);
   });
 
 program
   .command('remove', 'remove an identity from .gitidentities')
   .argument('<identity>', 'identity name', Object.keys(getIdentities()))
-  .action(args => {
+  .action((args, options, logger) => {
     let identities = getIdentities();
     if (!identities[args.identity]) {
-      console.warn('that identity doesn\'t exist');
+      logger.warn('that identity doesn\'t exist');
       process.exit(1);
     }
     delete identities[args.identity];
     saveIdentities(identities);
-    console.info(`Successfully removed ${args.identity}`);
+    logger.info(`Successfully removed ${args.identity}`);
   });
 
 program
   .command('show', 'show info about an identity')
   .argument('<identity>', 'identity name', Object.keys(getIdentities()))
-  .action(args => {
+  .action((args, options, logger) => {
     const identities = getIdentities();
     const identity = identities[args.identity];
     if (!identity) {
-      console.log('identity not found');
+      logger.warn('identity not found');
       process.exit(1);
     }
-    printIdentity(identity);
+    printIdentity(logger, identity);
   });
 
 program
   .command('ls', 'list all identities')
-  .action(() => {
+  .action((args, options, logger) => {
     const identities = getIdentities();
-    Object.keys(identities).forEach(key => console.log(key));
+    Object.keys(identities).forEach(key => logger.log(key));
   });
 
 program
-  .command('reset', 'reset identity for this project ot the global git identity')
-  .action(() => {
-    setCurrentIdentity(getCurrentIdentity(true));
-    console.info('Identity has been reset to global identity');
+  .command('reset', 'reset identity for this project to the global git identity')
+  .action((args, options, logger) => {
+    shell.exec('git config --unset user.name', { silent: true });
+    shell.exec('git config --unset user.email', { silent: true });
+    shell.exec('git config --unset user.signingkey', { silent: true });
+    logger.info('Identity has been reset to global identity');
   });
 
 program
   .command('current', 'show current identity')
   .option('-g, --global', 'global git config')
-  .action(options => {
-    printIdentity(getCurrentIdentity(options.global));
+  .action((args, options, logger) => {
+    printIdentity(logger, getCurrentIdentity(options.global));
   });
 
 program.parse(process.argv);
