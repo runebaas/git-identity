@@ -5,7 +5,7 @@ const chalk = require('chalk');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const package = require('../package');
+const version = require('../package').version;
 
 if (!shell.which('git')) {
   console.warn('This script requires git');
@@ -16,7 +16,7 @@ const gitProfileFileLocation = path.join(os.homedir(), '.gitidentities');
 
 function getIdentities() {
   if (!fs.existsSync(gitProfileFileLocation)) {
-    console.warn(chalk.yellow('no .gitidentities file found, creating one at ~/.gitidentities with your current identity'));
+    console.warn(chalk.yellow('no .gitidentities file found, creating one at ~/.gitidentities with your current identity\n'));
     saveIdentities({ default: getCurrentIdentity() });
   }
   const fileRaw = fs.readFileSync(gitProfileFileLocation);
@@ -53,63 +53,63 @@ function printIdentity(identity) {
   }
 }
 
-program.version(package.version);
+program.version(version);
 
 program
   .command('use', 'use an identity')
   .argument('<identity>', 'identity name', Object.keys(getIdentities()))
-  .option('-g, --global')
-  .action((identity, options) => {
+  .option('-g, --global', 'global git config')
+  .action((args, options) => {
     const identities = getIdentities();
-    const i = identities[identity];
+    const i = identities[args.identity];
     if (!i) {
       console.log('identity not found');
       process.exit(1);
     }
     setCurrentIdentity(i, options.global);
-    console.info(`Identity set to ${identity}`);
+    console.info(`Identity set to ${args.identity}`);
   });
 
 program
   .command('add', 'add the current identity to .gitidentities')
-  .argument('<identity>', 'identity name', Object.keys(getIdentities()))
-  .action(name => {
+  .argument('<name>', 'name for the identity')
+  .action(args => {
     const identity = getCurrentIdentity();
     let identities = getIdentities();
-    if (identities[name]) {
+    if (identities[args.name]) {
       console.warn('that identity already exists');
       process.exit(1);
     }
-    identities[name] = identity;
+    identities[args.name] = identity;
     saveIdentities(identities);
-    console.info(`Successfully added ${name}`);
+    console.info(`Successfully added ${args.name}`);
   });
 
 program
   .command('remove', 'remove an identity from .gitidentities')
   .argument('<identity>', 'identity name', Object.keys(getIdentities()))
-  .action(identity => {
+  .action(args => {
     let identities = getIdentities();
-    if (!identities[identity]) {
+    if (!identities[args.identity]) {
       console.warn('that identity doesn\'t exist');
       process.exit(1);
     }
-    delete identities[identity];
+    delete identities[args.identity];
     saveIdentities(identities);
-    console.info(`Successfully removed ${identity}`);
+    console.info(`Successfully removed ${args.identity}`);
   });
 
 program
   .command('show', 'show info about an identity')
   .argument('<identity>', 'identity name', Object.keys(getIdentities()))
-  .action(identity => {
+  .action(args => {
     const identities = getIdentities();
-    const p = identities[identity];
-    if (!p) {
+    const identity = identities[args.identity];
+    if (!identity) {
       console.log('identity not found');
       process.exit(1);
     }
-    printIdentity(p);
+    printIdentity(identity);
   });
 
 program
@@ -128,13 +128,9 @@ program
 
 program
   .command('current', 'show current identity')
-  .option('-g, --global')
+  .option('-g, --global', 'global git config')
   .action(options => {
     printIdentity(getCurrentIdentity(options.global));
   });
-
-// program
-//   .command('*')
-//   .action(() => console.log('could not find command, use "git-identity -h" for a list of all commands'));
 
 program.parse(process.argv);
