@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const program = require('caporal');
 const shell = require('shelljs');
-const chalk = require('chalk');
+const kleur = require('kleur');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -16,7 +16,7 @@ const gitProfileFileLocation = path.join(os.homedir(), '.gitidentities');
 
 function getIdentities() {
   if (!fs.existsSync(gitProfileFileLocation)) {
-    console.warn(chalk.yellow('no .gitidentities file found, creating one at ~/.gitidentities with your current identity\n'));
+    console.warn(kleur.yellow('no .gitidentities file found, creating one at ~/.gitidentities with your current identity\n'));
     saveIdentities({ default: getCurrentIdentity() });
   }
   const fileRaw = fs.readFileSync(gitProfileFileLocation);
@@ -46,10 +46,10 @@ function setCurrentIdentity(identity, global = false) {
 }
 
 function printIdentity(logger, identity) {
-  logger.info(chalk.green('Name:  ') + identity.name);
-  logger.info(chalk.green('Email: ') + identity.email);
+  logger.info(kleur.green('Name:  ') + identity.name);
+  logger.info(kleur.green('Email: ') + identity.email);
   if (identity.signingKey) {
-    logger.info(chalk.green('key:   ') + identity.signingKey);
+    logger.info(kleur.green('key:   ') + identity.signingKey);
   }
 }
 

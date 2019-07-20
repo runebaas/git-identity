@@ -1,6 +1,6 @@
 {
   "name": "git-identity",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A Git Identity Manager",
   "main": "src/main.js",
   "repository": "https://github.com/runebaas/git-identity",
@@ -9,7 +9,7 @@
   "scripts": {},
   "dependencies": {
     "caporal": "^0.10.0",
-    "chalk": "^2.4.1",
+    "kleur": "^3.0.3",
     "shelljs": "^0.8.2"
   },
   "devDependencies": {
