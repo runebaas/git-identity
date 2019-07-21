@@ -24,7 +24,7 @@ function getIdentities() {
 }
 
 function saveIdentities(identities) {
-  fs.writeFileSync(gitProfileFileLocation, JSON.stringify(identities));
+  fs.writeFileSync(gitProfileFileLocation, JSON.stringify(identities, null, 4));
 }
 
 function getCurrentIdentity(global = false) {
