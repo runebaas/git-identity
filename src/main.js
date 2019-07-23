@@ -116,7 +116,7 @@ program
   .command('ls', 'list all identities')
   .action((args, options, logger) => {
     const identities = getIdentities();
-    Object.keys(identities).forEach(key => logger.log(key));
+    Object.keys(identities).forEach(key => logger.info(key));
   });
 
 program
