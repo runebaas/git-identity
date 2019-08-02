@@ -40,8 +40,13 @@ function setCurrentIdentity(identity, global = false) {
   shell.exec(`git config${global ? ' --global' : ''} user.email "${identity.email}"`, { silent: true });
   if (identity.signingKey) {
     shell.exec(`git config${global ? ' --global' : ''} user.signingkey "${identity.signingKey}"`, { silent: true });
+    shell.exec('git config --unset core.gpgsign');
   } else {
     shell.exec(`git config${global ? ' --global' : ''} --unset user.signingkey`, { silent: true });
+    // prevent signing (with the global key) if there is no signing key in a particular directory
+    if (!global && shell.exec('git config --global user.signingkey')) {
+      shell.exec('git config core.gpgsign false');
+    }
   }
 }
 
